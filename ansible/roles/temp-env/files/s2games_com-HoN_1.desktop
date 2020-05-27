@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Heroes Of Newerth
+GenericName=Multiplayer Game
+Comment=Heroes of Newerth
+Icon=/opt/HoN/honicon_128x128
+Exec=/opt/HoN/hon-x86_64
+Categories=Game;

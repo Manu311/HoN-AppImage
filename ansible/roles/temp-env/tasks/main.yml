@@ -1,0 +1,86 @@
+- name: Fetch script
+  get_url:
+    url: https://raw.githubusercontent.com/boolean-world/appimage-resources/master/tempenv.sh
+    dest: /mnt/tempenv.sh
+    mode: "550"
+    validate_certs: no
+
+- name: Fetch AppImageKit
+  get_url:
+    url: https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    dest: /opt/appimagetool-x86_64.AppImage
+    mode: "550"
+    validate_certs: no
+
+- name: Check for setup
+  stat: path=/mnt/tempenv/dev
+  register: dev
+
+- name: Check for AppDir
+  stat: path=/mnt/HoN.AppDir
+  register: appDir
+
+- name: Setup Temp-Env
+  when: not (dev.stat.isdir is defined and dev.stat.isdir)
+  shell:
+    cmd: ./tempenv.sh setup
+    chdir: /mnt/
+
+- name: Start Temp-Env
+  #when: not (appDir.stat.isdir is defined and appDir.stat.isdir)
+  shell:
+    cmd: >
+      ./tempenv.sh start <<EOF
+      
+      apt-get install --no-install-recommends -y 
+      libfontconfig1 libxml2 libxrender1 libxext6 libgdk-pixbuf2.0-0 
+      libxi6 libcairo2 libcups2 libnss3 libxfixes3 libasound2 
+      libpangocairo-1.0-0 libgtk2.0-0 libgconf-2-4 
+      libgl1 libglu1-mesa libkeyutils1
+      
+      apt-get --reinstall install --no-install-recommends -y libudev1 libffi6 libpcre3 libsystemd0 libselinux1
+      
+      exit
+      
+      EOF
+    chdir: /mnt
+
+- name: Copy files to AppDir
+  #when: not (appDir.stat.isdir is defined and appDir.stat.isdir)
+  shell:
+    cmd: cp -r tempenv/files HoN.AppDir
+    chdir: /mnt
+
+- name: Copy HoN to AppDir
+  when: not (appDir.stat.isdir is defined and appDir.stat.isdir)
+  shell:
+    cmd: mkdir HoN.AppDir/opt && cp -r HoN HoN.AppDir/opt/HoN
+    chdir: /mnt
+
+- name: Copy Desktop-File to AppDir
+  copy:
+    src: s2games_com-HoN_1.desktop
+    dest: /mnt/HoN.AppDir/s2games_com-HoN_1.desktop
+    mode: "550"
+
+#- name: Copy MetaInfo
+#  copy:
+#    src: metainfo
+#    dest: /usr/share/metainfo
+
+- name: Create Symbolic Link to libudev.so.0
+  file:
+    src: ../../../lib/x86_64-linux-gnu/libudev.so.1
+    dest: /mnt/HoN.AppDir/opt/HoN/libs-x86_64/libudev.so.0
+    state: link
+
+- name: Copy AppRun
+  copy:
+    src: AppRun
+    dest: /mnt/HoN.AppDir/AppRun
+    mode: "550"
+
+- name: Build AppImage
+  shell:
+    cmd: ARCH=x86_64 /opt/appimagetool-x86_64.AppImage HoN.AppDir
+    chdir: /mnt

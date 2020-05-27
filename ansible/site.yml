@@ -1,0 +1,11 @@
+- name: Generate Docker-Container
+  roles:
+    - docker-prepare
+  hosts: localhost
+  connection: local
+  
+- name: Prepare AppImage
+  roles:
+    - temp-env
+  hosts: hon-ansible
+  connection: docker

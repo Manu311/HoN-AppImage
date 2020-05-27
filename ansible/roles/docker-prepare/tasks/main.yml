@@ -1,0 +1,28 @@
+- name: Create docker-container
+  docker_container:
+    name: hon-ansible
+    image: hon-appimage
+    devices:
+      - /dev/fuse
+      - /dev/snd
+    volumes:
+      - ../HoN:/mnt/HoN
+      - /tmp/.X11-unix/X0:/tmp/.X11-unix/X0
+      - tempenv:/mnt/tempenv
+    env:
+      DISPLAY: ":0"
+    capabilities:
+      - sys_admin
+    state: started
+    entrypoint: /bin/sleep
+    command: "3600"
+    tty: yes
+    detach: yes
+    init: yes
+
+- name: Register container as ansible-host
+  add_host:
+    name: "hon-ansible"
+    ansible_connection: docker
+    ansible_python_interpreter: python3
+  changed_when: false

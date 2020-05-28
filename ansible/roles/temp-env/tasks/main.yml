@@ -33,10 +33,11 @@
       ./tempenv.sh start <<EOF
       
       apt-get install --no-install-recommends -y 
-      libfontconfig1 libxml2 libxrender1 libxext6 libgdk-pixbuf2.0-0 
-      libxi6 libcairo2 libcups2 libnss3 libxfixes3 libasound2 
-      libpangocairo-1.0-0 libgtk2.0-0 libgconf-2-4 
-      libgl1 libglu1-mesa libkeyutils1
+      libfontconfig1 libxml2 libgdk-pixbuf2.0-0 
+      libcairo2 libcups2 libnss3 libasound2 
+      libpangocairo-1.0-0 
+      libkeyutils1
+      #libgtk2.0-0 libgl1 libglu1-mesa libgconf-2-4 libxrender1 libxext6 libxfixes3 libxi6
       
       apt-get --reinstall install --no-install-recommends -y libudev1 libffi6 libpcre3 libsystemd0 libselinux1
       

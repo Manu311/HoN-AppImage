@@ -69,17 +69,36 @@
 #    src: metainfo
 #    dest: /usr/share/metainfo
 
-- name: Create Symbolic Link to libudev.so.0
-  file:
-    src: ../../../lib/x86_64-linux-gnu/libudev.so.1
-    dest: /mnt/HoN.AppDir/opt/HoN/libs-x86_64/libudev.so.0
-    state: link
-
 - name: Copy AppRun
   copy:
     src: AppRun
     dest: /mnt/HoN.AppDir/AppRun
     mode: "550"
+
+- name: Install bbe
+  apt:
+    name: bbe
+    state: present
+
+- name: Replace linked libudev.so.0 with libudev.so.1 (hack!)
+  shell:
+    cmd: >
+      mv libawesomium-1-7.so.5 libawesomium-1-7.so.5.bck &&
+      bbe -e 's/libudev.so.0/libudev.so.1/' libawesomium-1-7.so.5.bck > libawesomium-1-7.so.5
+    chdir: /mnt/HoN.AppDir/opt/HoN/libs-x86_64
+
+- name: Delete unneeded libraries
+  file:
+    state: absent
+    path: "/mnt/HoN.AppDir/lib/x86_64-linux-gnu/{{ item }}"
+  loop:
+    - libudev.so.1
+    - libudev.so.1.6.13
+    - libsystemd.so.0
+    - libsystemd.so.0.25.0
+    - libselinux.so.1
+    - libpcre.so.3
+    - libpcre.so.3.13.3
 
 - name: Build AppImage
   shell:

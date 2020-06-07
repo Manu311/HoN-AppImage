@@ -1,0 +1,14 @@
+HoN/**/*.s2z
+HoN/libk2-x86.so
+HoN/vid_gl2-x86.so
+HoN/hon-x86
+HoN/libs-x86
+HoN/libs-x86_64/libawesomium-1.6.5.so.0
+HoN/libs-x86_64/plugins
+HoN/game
+HoN/Update
+HoN/editor
+HoN/.mojosetup
+ansible
+BaseImage
+Heroes_Of_Newerth-x86_64.AppImage

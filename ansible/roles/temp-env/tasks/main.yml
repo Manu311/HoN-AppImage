@@ -27,19 +27,21 @@
     chdir: /mnt/
 
 - name: Start Temp-Env
-  #when: not (appDir.stat.isdir is defined and appDir.stat.isdir)
   shell:
     cmd: >
       ./tempenv.sh start <<EOF
       
       apt-get install --no-install-recommends -y 
-      libfontconfig1 libxml2 libgdk-pixbuf2.0-0 
+      libxml2 libgdk-pixbuf2.0-0 
       libcairo2 libcups2 libnss3 libasound2 
       libpangocairo-1.0-0 
       libkeyutils1
-      #libgtk2.0-0 libgl1 libglu1-mesa libgconf-2-4 libxrender1 libxext6 libxfixes3 libxi6
       
-      apt-get --reinstall install --no-install-recommends -y libudev1 libffi6 libpcre3 libsystemd0 libselinux1
+      apt-get --reinstall install --no-install-recommends -y
+      libffi6
+      libharfbuzz0b
+      libfontconfig1
+      libfreetype6
       
       exit
       
@@ -47,16 +49,18 @@
     chdir: /mnt
 
 - name: Copy files to AppDir
-  #when: not (appDir.stat.isdir is defined and appDir.stat.isdir)
   shell:
     cmd: cp -r tempenv/files HoN.AppDir
     chdir: /mnt
 
+- name: Prepare AppDir
+  file:
+    path: /mnt/HoN.AppDir/opt
+    state: directory
+
 - name: Copy HoN to AppDir
-  when: not (appDir.stat.isdir is defined and appDir.stat.isdir)
   shell:
-    cmd: mkdir HoN.AppDir/opt && cp -r HoN HoN.AppDir/opt/HoN
-    chdir: /mnt
+    cmd: mv /opt/HoN /mnt/HoN.AppDir/opt/HoN
 
 - name: Copy Desktop-File to AppDir
   copy:
@@ -75,18 +79,6 @@
     dest: /mnt/HoN.AppDir/AppRun
     mode: "550"
 
-- name: Install bbe
-  apt:
-    name: bbe
-    state: present
-
-- name: Replace linked libudev.so.0 with libudev.so.1 (hack!)
-  shell:
-    cmd: >
-      mv libawesomium-1-7.so.5 libawesomium-1-7.so.5.bck &&
-      bbe -e 's/libudev.so.0/libudev.so.1/' libawesomium-1-7.so.5.bck > libawesomium-1-7.so.5
-    chdir: /mnt/HoN.AppDir/opt/HoN/libs-x86_64
-
 - name: Delete unneeded libraries
   file:
     state: absent
@@ -104,3 +96,9 @@
   shell:
     cmd: ARCH=x86_64 /opt/appimagetool-x86_64.AppImage HoN.AppDir
     chdir: /mnt
+
+- name: Extract AppImage
+  fetch:
+    src: /mnt/Heroes_Of_Newerth-x86_64.AppImage
+    dest: ../Heroes_Of_Newerth-x86_64.AppImage
+    flat: yes

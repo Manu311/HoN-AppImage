@@ -1,5 +1,8 @@
 FROM debian:10
-RUN apt-get update && apt-get install -y --no-install-recommends python3 unionfs-fuse file
+RUN apt-get update && apt-get install -y --no-install-recommends python3 unionfs-fuse file rsync bbe
+
+COPY HoN /opt/HoN
+
 #HoN-dependencies:
 #RUN apt-get install --no-install-recommends -y \
 #	libfontconfig1 libxml2 libxrender1 libxext6 libgdk-pixbuf2.0-0 \

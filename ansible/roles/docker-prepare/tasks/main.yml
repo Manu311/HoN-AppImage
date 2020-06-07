@@ -1,12 +1,22 @@
+- name: Create docker-image
+  docker_image:
+    name: hon-appimage
+    build:
+      path: ../
+      dockerfile: BaseImage/Dockerfile
+      pull: no
+    force_source: yes
+    source: build
+
 - name: Create docker-container
   docker_container:
     name: hon-ansible
     image: hon-appimage
+    recreate: yes
     devices:
       - /dev/fuse
       - /dev/snd
     volumes:
-      - ../HoN:/mnt/HoN
       - /tmp/.X11-unix/X0:/tmp/.X11-unix/X0
       - tempenv:/mnt/tempenv
     env:

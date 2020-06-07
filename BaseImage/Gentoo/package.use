@@ -1,0 +1,14 @@
+media-libs/freetype X -adobe-cff -bzip2 -cleartype_hinting -harfbuzz
+dev-libs/glib -mime -xattr
+x11-libs/gtk+ X -introspection
+x11-libs/cairo X glib svg
+media-libs/libepoxy X -egl
+media-libs/harfbuzz cairo glib -graphite truetype
+gnome-base/librsvg -introspection -vala
+dev-db/sqlite -readline
+
+net-print/cups -acl -pam -ssl
+app-text/poppler cxx -introspection -jpeg -jpeg2k lcms utils
+media-libs/tiff -cxx -zlib
+net-print/cups-filters -foomatic -postscript
+sys-devel/bc -readline

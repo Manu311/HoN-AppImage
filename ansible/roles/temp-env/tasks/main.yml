@@ -1,9 +1,8 @@
 - name: Fetch script
-  get_url:
-    url: https://raw.githubusercontent.com/boolean-world/appimage-resources/master/tempenv.sh
+  copy:
+    src: tempenv.sh
     dest: /mnt/tempenv.sh
     mode: "550"
-    validate_certs: no
 
 - name: Fetch AppImageKit
   get_url:
@@ -11,6 +10,12 @@
     dest: /opt/appimagetool-x86_64.AppImage
     mode: "550"
     validate_certs: no
+
+- name: Create Link for unionfs mount
+  file:
+    dest: /usr/bin/unionfs-fuse
+    src: /usr/bin/unionfs
+    state: link
 
 - name: Check for setup
   stat: path=/mnt/tempenv/dev
@@ -20,15 +25,19 @@
   stat: path=/mnt/HoN.AppDir
   register: appDir
 
+- name: Clear tempenv
+  file:
+    path: /mnt/tempenv
+    state: absent
+
 - name: Setup Temp-Env
-  when: not (dev.stat.isdir is defined and dev.stat.isdir)
   shell:
     cmd: ./tempenv.sh setup
     chdir: /mnt/
 
 - name: Start Temp-Env
   shell:
-    cmd: >
+    cmd: >      
       ./tempenv.sh start <<EOF
       
       apt-get install --no-install-recommends -y 
@@ -43,10 +52,33 @@
       libfontconfig1
       libfreetype6
       
-      exit
+      exit $?
       
       EOF
     chdir: /mnt
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Start Temp-Env
+  shell:
+    cmd: >
+      MAKEOPTS="-j3"
+      USE="-introspection"
+      emerge -vbkn --jobs=2
+      @hon-tempenv
+      || exit $?
+      
+      ./tempenv.sh start <<EOF
+      
+      MAKEOPTS="-j3"
+      USE="-introspection"
+      emerge -vk --jobs=2
+      @hon-tempenv
+      
+      exit $?
+      
+      EOF
+    chdir: /mnt
+  when: ansible_facts['os_family'] == "Gentoo"
 
 - name: Copy files to AppDir
   shell:
@@ -79,18 +111,28 @@
     dest: /mnt/HoN.AppDir/AppRun
     mode: "550"
 
-- name: Delete unneeded libraries
+- name: Delete non-library files
   file:
     state: absent
-    path: "/mnt/HoN.AppDir/lib/x86_64-linux-gnu/{{ item }}"
+    path: "/mnt/HoN.AppDir/{{ item }}"
   loop:
-    - libudev.so.1
-    - libudev.so.1.6.13
-    - libsystemd.so.0
-    - libsystemd.so.0.25.0
-    - libselinux.so.1
-    - libpcre.so.3
-    - libpcre.so.3.13.3
+    - usr/share/
+    - usr/include
+    - usr/libexec
+    - var
+
+#- name: Delete unneeded libraries
+#  file:
+#    state: absent
+#    path: "/mnt/HoN.AppDir/lib/x86_64-linux-gnu/{{ item }}"
+#  loop:
+#    - libudev.so.1
+#    - libudev.so.1.6.13
+#    - libsystemd.so.0
+#    - libsystemd.so.0.25.0
+#    - libselinux.so.1
+#    - libpcre.so.3
+#    - libpcre.so.3.13.3
 
 - name: Build AppImage
   shell:

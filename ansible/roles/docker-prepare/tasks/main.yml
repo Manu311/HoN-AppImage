@@ -3,7 +3,7 @@
     name: hon-appimage
     build:
       path: ../
-      dockerfile: BaseImage/Dockerfile
+      dockerfile: BaseImage/Gentoo.dockerfile
       pull: no
     force_source: yes
     source: build
@@ -19,6 +19,7 @@
     volumes:
       - /tmp/.X11-unix/X0:/tmp/.X11-unix/X0
       - tempenv:/mnt/tempenv
+      - binpkgs:/var/cache/binpkgs
     env:
       DISPLAY: ":0"
     capabilities:

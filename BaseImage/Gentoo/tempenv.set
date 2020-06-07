@@ -1,0 +1,10 @@
+media-libs/fontconfig
+dev-libs/glib
+x11-libs/libXi
+x11-libs/gtk+:2
+dev-libs/nss
+gnome-base/gconf
+media-libs/alsa-lib
+net-print/cups
+media-libs/harfbuzz
+media-libs/freetype

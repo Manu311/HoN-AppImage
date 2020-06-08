@@ -10,7 +10,6 @@ USE="X" emerge -qv dev-util/cmake media-libs/mesa x11-libs/libdrm
 #x11-libs/libXcomposite x11-libs/libXtst x11-libs/libfontenc x11-apps/mkfontscale app-text/xmlto \
 #x11-misc/shared-mime-info
 
-COPY HoN /opt/HoN
 COPY BaseImage/Gentoo/package.use /etc/portage/package.use/tempenv
 RUN mkdir /etc/portage/sets
 COPY BaseImage/Gentoo/tempenv.set /etc/portage/sets/hon-tempenv

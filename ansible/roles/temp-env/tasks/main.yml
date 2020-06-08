@@ -74,7 +74,7 @@
       
       EOF
     chdir: /mnt
-  when: ansible_facts['os_family'] == "Gentoo"
+  when: ansible_facts['os_family'] == "Gentoo42"
 
 - name: Copy files to AppDir
   shell:
@@ -86,15 +86,16 @@
     path: /mnt/HoN.AppDir/opt
     state: directory
 
-- name: Copy HoN to AppDir
-  shell:
-    cmd: mv /opt/HoN /mnt/HoN.AppDir/opt/HoN && rm /mnt/HoN.AppDir/opt/HoN/vid_gl2-x86_64.so /mnt/HoN.AppDir/opt/HoN/libs-x86_64/libawesomium-1-7.so.5
-
 - name: Copy Desktop-File to AppDir
   copy:
     src: s2games_com-HoN_1.desktop
     dest: /mnt/HoN.AppDir/s2games_com-HoN_1.desktop
     mode: "550"
+
+- name: Copy Icon-File
+  copy:
+    src: honicon_128x128.png
+    dest: /mnt/HoN.AppDir/honicon_128x128.png
 
 #- name: Copy MetaInfo
 #  copy:
@@ -102,10 +103,12 @@
 #    dest: /usr/share/metainfo
 
 - name: Copy AppRun
-  copy:
+  template:
     src: AppRun
     dest: /mnt/HoN.AppDir/AppRun
     mode: "550"
+  vars:
+    hon_version: "4.8.4"
 
 - name: Delete non-library files
   file:
@@ -116,19 +119,6 @@
     - usr/include
     - usr/libexec
     - var
-
-#- name: Delete unneeded libraries
-#  file:
-#    state: absent
-#    path: "/mnt/HoN.AppDir/lib/x86_64-linux-gnu/{{ item }}"
-#  loop:
-#    - libudev.so.1
-#    - libudev.so.1.6.13
-#    - libsystemd.so.0
-#    - libsystemd.so.0.25.0
-#    - libselinux.so.1
-#    - libpcre.so.3
-#    - libpcre.so.3.13.3
 
 - name: Build AppImage
   shell:

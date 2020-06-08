@@ -1,0 +1,56 @@
+#!/bin/sh
+SELF_DIR="$(dirname "$(readlink -f "$0")")"
+LIBS_PATH="$SELF_DIR/lib:$SELF_DIR/lib/x86_64-linux-gnu:$SELF_DIR/usr/lib:$SELF_DIR/usr/lib/x86_64-linux-gnu"
+
+if [ -z "$LD_LIBRARY_PATH" ]; then
+  LD_LIBRARY_PATH="$LIBS_PATH"
+else
+  LD_LIBRARY_PATH="$LIBS_PATH:$LD_LIBRARY_PATH"
+fi
+
+export LD_LIBRARY_PATH
+
+DOWNLOAD_DIR="$HOME/.Heroes of Newerth/.bin"
+mkdir -p "${DOWNLOAD_DIR}/libs-x86_64"
+
+for udevpath in /lib/x86_64-linux-gnu/libudev.so.1 /usr/lib64/libudev.so.1 /usr/lib/libudev.so.1 /lib/i386-linux-gnu/libudev.so.1 /lib64/libudev.so.1 /lib/libudev.so.1 ; do
+  if [ -f "$udevpath" ]; then
+    # Map libudev.so.1 to libudev.so.0, if necessary
+    ln -sf "$udevpath" "$HOME/.Heroes of Newerth/.bin/libs-x86_64/libudev.so.0"
+    break
+  fi
+done
+
+if [ ! -f "${DOWNLOAD_DIR}/game/resources0.s2z" ]
+then
+  echo "Preparing to download HoN, please be patient ...."
+  mkdir -p "${DOWNLOAD_DIR}/hon-downloader"
+  cd "${DOWNLOAD_DIR}/hon-downloader"
+  $SELF_DIR/usr/bin/wget -q -O manifest.xml.zip http://dl.heroesofnewerth.com/lac/x86-biarch/4.8.4/manifest.xml.zip || (echo "Failed to download manifest"; exit 1)
+  $SELF_DIR/usr/bin/unzip -q -o manifest.xml.zip
+
+  for path in "" game/ libs-x86_64/ base/ updater_resources/
+  do
+    mkdir -p "${DOWNLOAD_DIR}/${path}"
+    cd "${DOWNLOAD_DIR}/${path}"
+    for url in `grep -i "<file path=\"$path[^/]*\"" "${DOWNLOAD_DIR}/hon-downloader/manifest.xml" | sed 's~.*path="\([^"]*\)".*version="\([^"]*\)\.[0-9]".*~http://dl.heroesofnewerth.com/lac/x86-biarch/\2/\1.zip~'`
+    do
+      $SELF_DIR/usr/bin/wget -q -O "${DOWNLOAD_DIR}/hon-downloader/dl.zip" $url
+      if [ $? -eq 0 ]
+      then
+        $SELF_DIR/usr/bin/unzip -q -o "${DOWNLOAD_DIR}/hon-downloader/dl.zip"
+        rm "${DOWNLOAD_DIR}/hon-downloader/dl.zip"
+      else
+        echo "Couldn't download ${url} into /${path}, this is probably fine"
+      fi
+    done
+    cd "$SELF_DIR"
+  done
+
+  chmod +x "${DOWNLOAD_DIR}/hon-x86_64"
+	
+  exec "${DOWNLOAD_DIR}/hon-x86_64" "-repair"
+fi
+
+export LD_PRELOAD="$SELF_DIR/usr/lib64/libfreetype.so"
+exec "${DOWNLOAD_DIR}/hon-x86_64" "$*"

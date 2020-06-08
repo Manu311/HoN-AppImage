@@ -8,3 +8,5 @@ media-libs/alsa-lib
 net-print/cups
 media-libs/harfbuzz
 media-libs/freetype
+app-arch/unzip
+net-misc/wget

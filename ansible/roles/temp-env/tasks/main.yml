@@ -25,12 +25,8 @@
   stat: path=/mnt/HoN.AppDir
   register: appDir
 
-- name: Clear tempenv
-  file:
-    path: /mnt/tempenv
-    state: absent
-
 - name: Setup Temp-Env
+  when: not (dev.stat.isdir is defined and dev.stat.isdir)
   shell:
     cmd: ./tempenv.sh setup
     chdir: /mnt/
@@ -65,7 +61,7 @@
       USE="-introspection"
       emerge -vbkn --jobs=2
       @hon-tempenv
-      || exit $?
+      &&
       
       ./tempenv.sh start <<EOF
       
@@ -92,7 +88,7 @@
 
 - name: Copy HoN to AppDir
   shell:
-    cmd: mv /opt/HoN /mnt/HoN.AppDir/opt/HoN
+    cmd: mv /opt/HoN /mnt/HoN.AppDir/opt/HoN && rm /mnt/HoN.AppDir/opt/HoN/vid_gl2-x86_64.so /mnt/HoN.AppDir/opt/HoN/libs-x86_64/libawesomium-1-7.so.5
 
 - name: Copy Desktop-File to AppDir
   copy:

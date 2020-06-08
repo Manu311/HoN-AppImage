@@ -12,3 +12,6 @@ app-text/poppler cxx -introspection -jpeg -jpeg2k lcms utils
 media-libs/tiff -cxx -zlib
 net-print/cups-filters -foomatic -postscript
 sys-devel/bc -readline
+
+app-arch/unzip -bzip2 -unicode
+net-misc/wget -ipv6 -zlib -pcre -nls

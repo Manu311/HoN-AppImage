@@ -14,6 +14,19 @@ if [ ! -f $HOME/.Heroes\ of\ Newerth/.bin/game/resources0.s2z ]
 then
 	mkdir -p $HOME/.Heroes\ of\ Newerth/.bin
 	rsync -rcEl $SELF_DIR/opt/HoN/ $HOME/.Heroes\ of\ Newerth/.bin
+	
+	if [ ! -f $HOME/.Heroes\ of\ Newerth/.bin/vid_gl2-x86_64.so ]
+	then $SELF_DIR/usr/bin/wget -O $HOME/.Heroes\ of\ Newerth/.bin/vid_gl2.zip http://dl.heroesofnewerth.com/lac/x86-biarch/4.5.3/vid_gl2-x86_64.so.zip
+		$SELF_DIR/usr/bin/unzip $HOME/.Heroes\ of\ Newerth/.bin/vid_gl2.zip -d $HOME/.Heroes\ of\ Newerth/.bin
+		rm $HOME/.Heroes\ of\ Newerth/.bin/vid_gl2.zip
+	fi
+	
+	if [ ! -f $HOME/.Heroes\ of\ Newerth/.bin/libs-x86_64/libawesomium-1-7.so.5 ]
+	then $SELF_DIR/usr/bin/wget -O $HOME/.Heroes\ of\ Newerth/.bin/libs-x86_64/libawesomium-1-7.so.5.zip http://dl.heroesofnewerth.com/lac/x86-biarch/3.7.10/libs-x86_64/libawesomium-1-7.so.5.zip
+		$SELF_DIR/usr/bin/unzip $HOME/.Heroes\ of\ Newerth/.bin/libs-x86_64/libawesomium-1-7.so.5.zip -d $HOME/.Heroes\ of\ Newerth/.bin/libs-x86_64
+		rm $HOME/.Heroes\ of\ Newerth/.bin/libs-x86_64/libawesomium-1-7.so.5.zip
+	fi
+	
 	exec $HOME/.Heroes\ of\ Newerth/.bin/hon-x86_64 -repair
 fi
 

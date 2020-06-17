@@ -25,6 +25,18 @@
   stat: path=/mnt/HoN.AppDir
   register: appDir
 
+- name: Copy Gentoo-Set
+  copy:
+    src: gentoo.set
+    dest: /etc/portage/sets/hon-tempenv
+  when: ansible_facts['os_family'] == "Gentoo"
+
+- name: Copy Gentoo-Uses
+  copy:
+    src: gentoo.use
+    dest: /etc/portage/package.use/tempenv
+  when: ansible_facts['os_family'] == "Gentoo"
+
 - name: Setup Temp-Env
   when: not (dev.stat.isdir is defined and dev.stat.isdir)
   shell:
@@ -59,7 +71,7 @@
     cmd: >
       MAKEOPTS="-j3"
       USE="-introspection"
-      emerge -vbkn --jobs=2
+      emerge -vbkn --jobs=4
       @hon-tempenv
       &&
       
@@ -67,14 +79,14 @@
       
       MAKEOPTS="-j3"
       USE="-introspection"
-      emerge -vk --jobs=2
+      emerge -vk --jobs=8
       @hon-tempenv
       
       exit $?
       
       EOF
     chdir: /mnt
-  when: ansible_facts['os_family'] == "Gentoo42"
+  when: ansible_facts['os_family'] == "Gentoo"
 
 - name: Copy files to AppDir
   shell:

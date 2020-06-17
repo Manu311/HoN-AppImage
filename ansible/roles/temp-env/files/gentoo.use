@@ -15,3 +15,6 @@ sys-devel/bc -readline
 
 app-arch/unzip -bzip2 -unicode
 net-misc/wget -ipv6 -zlib -pcre -nls
+
+#icu is required or hon will throw vid_gl2 errors
+dev-libs/libxml2 -python -readline icu

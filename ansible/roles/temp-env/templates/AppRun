@@ -38,7 +38,7 @@ then
   exec "$HOME/.Heroes of Newerth/.bin/hon-x86_64" "-repair"
 fi
 
-for udevpath in /lib/x86_64-linux-gnu/libudev.so.1 /usr/lib64/libudev.so.1 /usr/lib/libudev.so.1 /lib/i386-linux-gnu/libudev.so.1 /lib64/libudev.so.1 /lib/libudev.so.1 ; do
+for udevpath in /lib/x86_64-linux-gnu/libudev.so.1 /usr/lib64/libudev.so.1 /lib64/libudev.so.1 /usr/lib/libudev.so.1 /lib/i386-linux-gnu/libudev.so.1 /lib/libudev.so.1 ; do
   if [ -f "$udevpath" ]; then
     # Map libudev.so.1 to libudev.so.0, if necessary
     ln -sf "$udevpath" "$HOME/.Heroes of Newerth/.bin/libs-x86_64/libudev.so.0"
